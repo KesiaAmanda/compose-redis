@@ -1,1 +1,1 @@
-# compose-redis
+# Redis + Redis Commander

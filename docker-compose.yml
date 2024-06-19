@@ -1,0 +1,41 @@
+services:
+  redis:
+    container_name: redis
+    hostname: redis
+    command: "--requirepass ${REDIS_HOST_PASSWORD}"
+    image: redis
+    env_file:
+      - .env
+    volumes:
+      - redis_data:/data
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: tcp
+        mode: host
+    networks:
+      - redis-db-network
+
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_HOST_PASSWORD}
+      - HTTP_USER=${REDIS_HTTP_USER}
+      - HTTP_PASSWORD=${REDIS_HTTP_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "${REDIS_HTTP_PORT}:8081"
+    networks:
+      - redis-db-network
+
+networks:
+    redis-db-network:
+        driver: bridge
+
+volumes:
+  redis_data:
